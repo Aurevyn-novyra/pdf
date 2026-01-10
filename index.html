@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Game Style PDF Viewer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- PDF.js CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<style>
+:root {
+  --bg: #0b0f1a;
+  --card: #12182b;
+  --accent: #6cf2c2;
+  --text: #ffffff;
+  --muted: #8b93b9;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+body {
+  background: radial-gradient(circle at top, #12182b, #05060c);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.app {
+  width: 95%;
+  max-width: 1100px;
+  background: var(--card);
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+  animation: fadeIn 1s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.level {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.xp {
+  background: linear-gradient(135deg, #1dd1a1, #10ac84);
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Progress Bar */
+.progress {
+  height: 6px;
+  background: #1a2140;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
+
+.progress span {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), #4facfe);
+  transition: width 0.6s ease;
+}
+
+/* PDF Area */
+.viewer {
+  background: #000;
+  border-radius: 12px;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+}
+
+canvas {
+  width: 100%;
+  max-width: 800px;
+  border-radius: 8px;
+  animation: zoomIn 0.5s ease;
+}
+
+@keyframes zoomIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Controls */
+.controls {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+button {
+  background: linear-gradient(135deg, #1f2b5a, #141a33);
+  border: none;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+  <div class="header">
+    <div class="level">🎮 Level <span id="pageNum">1</span></div>
+    <div class="xp">⭐ XP: <span id="xp">0</span></div>
+  </div>
+
+  <div class="progress">
+    <span id="progressBar"></span>
+  </div>
+
+  <div class="viewer">
+    <canvas id="pdfCanvas"></canvas>
+  </div>
+
+  <div class="controls">
+    <button id="prevBtn">⬅ Previous</button>
+    <button id="nextBtn">Next ➡</button>
+  </div>
+
+</div>
+
+<script>
+const url = "sample.pdf";
+let pdfDoc = null;
+let pageNum = Number(localStorage.getItem("page")) || 1;
+let xp = Number(localStorage.getItem("xp")) || 0;
+
+const canvas = document.getElementById("pdfCanvas");
+const ctx = canvas.getContext("2d");
+
+const pageDisplay = document.getElementById("pageNum");
+const xpDisplay = document.getElementById("xp");
+const progressBar = document.getElementById("progressBar");
+
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+function renderPage(num) {
+  pdfDoc.getPage(num).then(page => {
+    const viewport = page.getViewport({ scale: 1.5 });
+    canvas.height = viewport.height;
+    canvas.width = viewport.width;
+
+    page.render({ canvasContext: ctx, viewport });
+
+    pageDisplay.textContent = num;
+    xp += 10;
+    xpDisplay.textContent = xp;
+
+    localStorage.setItem("page", pageNum);
+    localStorage.setItem("xp", xp);
+
+    const progress = (num / pdfDoc.numPages) * 100;
+    progressBar.style.width = progress + "%";
+  });
+}
+
+pdfjsLib.getDocument(url).promise.then(pdf => {
+  pdfDoc = pdf;
+  renderPage(pageNum);
+});
+
+document.getElementById("nextBtn").onclick = () => {
+  if (pageNum < pdfDoc.numPages) {
+    pageNum++;
+    renderPage(pageNum);
+  } else {
+    alert("🎉 GAME COMPLETED!");
+  }
+};
+
+document.getElementById("prevBtn").onclick = () => {
+  if (pageNum > 1) {
+    pageNum--;
+    renderPage(pageNum);
+  }
+};
+
+document.addEventListener("keydown", e => {
+  if (e.key === "ArrowRight") document.getElementById("nextBtn").click();
+  if (e.key === "ArrowLeft") document.getElementById("prevBtn").click();
+});
+</script>
+</body>
+</html>
