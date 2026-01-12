@@ -1,0 +1,109 @@
+:root {
+  --bg: #f7f9fb;
+  --card: #ffffff;
+  --text: #2d2d2d;
+  --muted: #6b7280;
+  --accent: #7c9cff;
+  --soft: #eef2ff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 720px;
+  margin: auto;
+  padding: 2rem 1.5rem 3rem;
+}
+
+header {
+  margin-bottom: 2rem;
+}
+
+h1 {
+  margin-bottom: 0.3rem;
+  font-weight: 600;
+}
+
+.subtitle {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.input-section {
+  background: var(--card);
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+
+textarea {
+  width: 100%;
+  min-height: 160px;
+  resize: vertical;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  padding: 1rem;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+button {
+  margin-top: 1rem;
+  padding: 0.6rem 1.4rem;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.95;
+}
+
+.response-section {
+  margin-top: 2rem;
+  background: var(--soft);
+  padding: 1.5rem;
+  border-radius: 12px;
+}
+
+.response-section h3 {
+  margin-top: 1.2rem;
+  font-size: 1rem;
+}
+
+.response-section p,
+.response-section li {
+  font-size: 0.95rem;
+}
+
+.hidden {
+  display: none;
+}
+
+footer {
+  margin-top: 3rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.disclaimer {
+  margin-top: 0.5rem;
+}
